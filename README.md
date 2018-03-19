@@ -1,1 +1,1 @@
-<p>Resolução de questões e listas de algoritmos 2018.1 (<a href="https://iudex.io/">iudex)</p><p>Obs.: busca_binaria.c exercício para treinamento.</p>
+<p>Resolução de questões e listas de algoritmos 2018.1 (<a href="https://iudex.io/">iudex</a>)</p><p>Obs.: busca_binaria.c exercício para treinamento.</p>
