@@ -1,12 +1,6 @@
 #include <stdio.h>
 
-#define tam_vet 100
-
-//Vetor da busca binaria
-int vetor[tam_vet];
-int tam = 1;
-
-int binary_search(int value) {
+int binary_search(int *vet, int value, int tam) {
 
     //Auxiliares das busca binaria
     int l, r, m;
@@ -17,9 +11,9 @@ int binary_search(int value) {
 
     do {
         m = (l + r) / 2;
-        if(value == vetor[m]) {
+        if(value == vet[m]) {
                 return 1;
-        } else if (value < vetor[m]) {
+        } else if (value < vet[m]) {
             r = m - 1;
         } else {
             l = m + 1;
@@ -36,17 +30,19 @@ int main() {
     printf("Coloquem os valores em ordem: \n");
 
     int N = 0, i = 0;
+	int tam_vet = 1;
+	int vetor[N];
 
 
     while(N != EOF) {
         scanf("%d", &N);
 
-        if(binary_search(N) == 1) {
+        if(binary_search(vetor, N, tam_vet) == 1) {
             printf("O vetor ja possui o valor informado: %d \n", N);
-        } else if (binary_search(N) == -1){
+        } else if (binary_search(vetor, N, tam_vet) == -1){
             vetor[i] = N;
             i++;
-            tam++;
+            tam_vet = tam_vet + 1;
         }
     } 
 
