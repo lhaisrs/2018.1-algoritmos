@@ -1,0 +1,23 @@
+3 5
+$TXT 10
+1 serao disputadas quatro fases.
+2 depois podem usar de papel de rascunho-  ou ate queimar.
+3 o painel, em policarbonato leitoso, precisa ocultar a visao dos caixas.
+4 aparece regional, estadual e nacionalmente por ser explicito!
+5 movimento onde a leitura foi mais importante do que a escritura.
+6 astral de grande sintonia com a pessoa amada e amigos.
+7  mais cedo, ao chegar ao congresso, o presidente do senado, garibaldi alves (pmdb-rn), reafirmou seu otimismo em relacao a chegada da materia em plenario, ja nesta quarta-feira, para votacao.
+8 sao ao todo 236 funcionarios.
+9 para os membros dacomissao especial, as acoes de criminalizacao e identificacaode integrantes de movimentos sociais sao um atentado ao estadodemocratico de direito.
+10 os interpretes de violas e cancoes, viola quebrada, luar do sertao e pingo dagua, entre outras, fizeram apresentacoes nos estados unidos.
+$CONSULTAS 10
+os membros
+usar*
+quebrada,
+reafirmou
+7 mais*
+garibaldi
+ao todo*
+e pingo
+luar
+oua
