@@ -2,22 +2,19 @@
 #include <string.h>
 #include <stdint.h>
 #include <stdlib.h>
+#include <time.h>
 
-    typedef struct node
+typedef struct node
 {
-
     struct node *next;
     int oc; //ocorrencias
-
 } node;
 
 typedef struct hash
 {
-
-    char str[1024]; //valor da string
+    char *str; //valor da string
     node *front;
     node *rear;
-
 } hash;
 
 //Valor de ocupacao da hash
@@ -28,19 +25,22 @@ float fatorCarga(int tam_hash)
     return ( (float) tam_oc / tam_hash);
 }
 
-int hashCode(int Q, int C, int j) {
-
+int hashCode(int Q, int C, int j)
+{
+    C = C * ( (C < 0) * (-1) + (C > 0));
     return ((C + j) % Q);
 }
 
-hash* create_hashtable(int Q) {
-    
+hash* create_hashtable(int Q)
+{    
     int i;
 
     //Criando a hashtable
     hash *hashtable = (hash *) malloc(Q*sizeof(hash));
 
-    for(i = 0; i < Q; i++) {
+    for(i = 0; i < Q; i++)
+    {
+        hashtable[i].str = (char*)malloc(1024*sizeof(char));
         hashtable[i].front = NULL;
         hashtable[i].rear = NULL;
     }
@@ -48,16 +48,18 @@ hash* create_hashtable(int Q) {
     return hashtable;       
 }
 
-void insert_hashtable(hash *table, int tam_table, char *table_kmers, uint32_t C, int oc) {
-
+void insert_hashtable(hash *table, int tam_table, char table_kmers[], uint32_t C, int oc)
+{
     //Auxiliares do for
     int i, pos;
 
-    for(i = 0; i < tam_table; i++) {
+    for(i = 0; i < tam_table; i++)
+    {
         
         pos = hashCode(tam_table, C, i);
 
-        if(table[pos].front == NULL) {
+        if(table[pos].front == NULL)
+        {
 
             node *ocorrencias = (node *) malloc(sizeof(node));
             ocorrencias->next = table[pos].rear;
@@ -65,14 +67,15 @@ void insert_hashtable(hash *table, int tam_table, char *table_kmers, uint32_t C,
 
             table[pos].front = ocorrencias;
             table[pos].rear = ocorrencias;
-            strcpy(table[pos].str, table_kmers);
+            table[pos].str = table_kmers;
 
             tam_oc++;
 
             return;
+        }
 
-        } else if(strcmp(table[pos].str, table_kmers) == 0) {
-
+        else if(strcmp(table[pos].str, table_kmers) == 0)
+        {
             node *ocorrencias = (node *) malloc(sizeof(node));
             ocorrencias->oc = oc;
             ocorrencias->next = NULL;
@@ -84,7 +87,8 @@ void insert_hashtable(hash *table, int tam_table, char *table_kmers, uint32_t C,
     }
 }
 
-char *take_str(char *text, int l, int r) {
+char *take_str(char *text, int l, int r)
+{
     //Auxiliares do for
     int i;
 
@@ -98,32 +102,35 @@ char *take_str(char *text, int l, int r) {
     return str;
 }
 
-hash *rehash_table(hash *oldhash, int Q, int K) {
+hash *rehash_table(hash *oldhash, int Q, int K)
+{
     int i, j, pos, newQ = (2 * Q) + 1;
     uint32_t C;
 
     hash *newhash = create_hashtable(newQ);
 
-    for(j=0;j<Q;j++){
-        if (oldhash[j].front != NULL) {
+    for(j=0;j<Q;j++)
+    {
+        if (oldhash[j].front != NULL)
+        {
             C = 0;
 
-            for(i = 0; i < K; i++) {
+            for(i = 0; i < K; i++)
+            {
                 C = C * 128 + oldhash[j].str[i];
             }
 
-            for(i = 0; i < newQ; i++) {
-            
+            for(i = 0; i < newQ; i++)
+            {
                 pos = hashCode(newQ, C, i);
 
-                if(newhash[pos].front == NULL) {
-
+                if(newhash[pos].front == NULL)
+                {
                     newhash[pos].front = oldhash[j].front;
                     newhash[pos].rear = oldhash[j].rear;
-                    strcpy(newhash[pos].str, oldhash[j].str);
+                    newhash[pos].str = oldhash[j].str;
 
                     break;
-
                 }
             }    
         }
@@ -133,8 +140,8 @@ hash *rehash_table(hash *oldhash, int Q, int K) {
 }
 
 
-int take_position(hash *table, char *kmers, int Q, int K) {
-
+int take_position(hash *table, char *kmers, int Q, int K)
+{
     //Auxiliar ao for
     int i, pos;
 
@@ -142,15 +149,17 @@ int take_position(hash *table, char *kmers, int Q, int K) {
 
     C = 0;
 
-    for(i = 0; i < K; i++) {
+    for(i = 0; i < K; i++)
+    {
         C = C * 128 + kmers[i];
     }
 
-    for(i = 0; i < Q; i++) {
-
+    for(i = 0; i < Q; i++)
+    {
         pos = hashCode(Q, C, i);
 
-        if(strcmp(table[pos].str, kmers) == 0) {
+        if(strcmp(table[pos].str, kmers) == 0)
+        {
             return pos;
         }
     }
@@ -160,6 +169,8 @@ int take_position(hash *table, char *kmers, int Q, int K) {
 
 int main()
 {
+    clock_t Ticks[5];
+    Ticks[0] = clock();
 
     //Auxiliares para o for
     int i, j;
@@ -175,48 +186,47 @@ int main()
     scanf("%s", str_txt);
     scanf("%d\n", &Y);
 
-    char txt[3030000];
+    char txt[3000000];
+    int aux=0, size=0;
 
     //Lendo o texto
-    char phrase[330];
-    for (i = 0; i < Y; i++)
-    {
-        scanf("%[^\n]\n", phrase);
-        strcat(phrase, "\n");
-        strcat(txt, phrase);
+    while(aux < Y && size < 3000000) {
+        scanf("%c", &txt[size]);
+        if (txt[size] == '\n') aux++;
+        size++;
     }
-        
+    txt[--size] = '\0';
+
     char *kmers = (char *) malloc(K*sizeof(char));
     //char kmers[1024];
-    int l = 0, size = strlen(txt);
+    int l = 0;
     uint32_t C;
 
+    Ticks[1] = clock();
     //Povoando a hashtable
-    for (i = K; i < size; i++){
-        if(fatorCarga(Q) >= 0.5) {
-
+    for (i = K; i < size; i++)
+    {
+        if(fatorCarga(Q) >= 0.5)
+        {
             hashtable = rehash_table(hashtable, Q, K);
 
             Q = (2 * Q) + 1;
         }
 
-
         C = 0;
 
-        for(j = l; j < i; j++) {
+        for(j = l; j < i; j++)
+        {
             C = C * 128 + txt[j];
         }
 
         kmers = take_str(txt, l, K);
-        //printf("Aqui\n");
-        //strcpy(kmers, take_str(txt, l, K));
-        //printf("Deu problema aqui!\n");
 
         insert_hashtable(hashtable, Q, kmers, C, l);
 
         l++;
-
     }
+    Ticks[2] = clock();
 
     scanf("%s", str_consulta);
     scanf("%d\n", &W);
@@ -224,29 +234,28 @@ int main()
     char words[1024];
 
     //Realizando a consulta
-    for(i = 0; i < W; i++) {
-
-        //scanf("%[^\n]", words);
-        gets(words);
+    for(i = 0; i < W; i++)
+    {
+        scanf("%[^\n]\n", words);
 
         kmers = take_str(words, 0, K);
-        //strcpy(kmers, take_str(words, 0, K));
 
+        int rsize = strlen(words) - K;
         int pos = take_position(hashtable, kmers, Q, K);
+        char *ftest = words+K;
 
         printf("%d:", i);
         j = 1;
 
-        if (pos >= 0) {
+        if (pos >= 0)
+        {
             node *aux;
             aux = hashtable[pos].front;
 
-
-            while(aux != NULL) {
-                int rsize = strlen(words) - K;
+            while(aux != NULL)
+            {
 
                 char *ftxt = take_str(txt, aux->oc + K, rsize);
-                char *ftest = take_str(words, K, rsize);
 
                 if(strcmp(ftest, ftxt) == 0) {
                     printf(" %d", aux->oc);
@@ -255,25 +264,29 @@ int main()
 
                 aux = aux->next;
             }
-    
         }
 
-        if (j) {
+        if (j)
+        {
             printf(" \n");
-        } else {
+        }
+        else
+        {
             printf("\n");
         }
-
-        strcpy(words, "");
-        
     }
+    Ticks[3] = clock();
 
     size = 0;
     j = 0;
-    for (i=0;i<Q;i++){
-        if (hashtable[i].front == NULL) {
+    for (i=0;i<Q;i++)
+    {
+        if (hashtable[i].front == NULL)
+        {
             j = 0;
-        } else {
+        }
+        else
+        {
             j++;
             size = size > j ? size : j;
         }
@@ -281,5 +294,17 @@ int main()
 
     printf("%d %d %d\n", tam_oc, Q, size);
     
+    Ticks[4] = clock();
+    double Tempo = (Ticks[1] - Ticks[0]) * 1000.0 / CLOCKS_PER_SEC;
+    printf("Tempo gasto lendo texto: %g ms.\n", Tempo);
+    Tempo = (Ticks[2] - Ticks[1]) * 1000.0 / CLOCKS_PER_SEC;
+    printf("Tempo gasto povoando a hashtable: %g ms.\n", Tempo);
+    Tempo = (Ticks[3] - Ticks[2]) * 1000.0 / CLOCKS_PER_SEC;
+    printf("Tempo gasto fazendo consultas: %g ms.\n", Tempo);
+    Tempo = (Ticks[4] - Ticks[3]) * 1000.0 / CLOCKS_PER_SEC;
+    printf("Tempo gasto finalizando: %g ms.\n", Tempo);
+    Tempo = (Ticks[4] - Ticks[0]) * 1000.0 / CLOCKS_PER_SEC;
+    printf("Tempo gasto total: %g ms.\n", Tempo);
+
     return 0;
 }
